@@ -4,7 +4,6 @@ class Table extends MY_Controller {
 
     function __construct() {
         parent::__construct();
-        $this->load->model('gamesessionModel', '', true);
 		$this->load->model('tableModel', '', true);
 		$this->load->model('userModel', '', true);
     }
@@ -14,7 +13,7 @@ class Table extends MY_Controller {
         
         if($decoded)
         {
-			$arr['json'] =$this->gamesessionModel->listActiveUsersInRoom();
+			$arr['json'] =$this->tableModel->listTable();
 			$arr['response_code']=200;
 		} else
         {
@@ -23,6 +22,32 @@ class Table extends MY_Controller {
             $arr['response_code'] = 401;
         }
         return $arr;
+	}
+	
+	function showPlayers(){
+		$decoded = $this->_authToken($this->input->get("token"));
+        $roomId =$this->input->post_json("roomId");
+		$tableId =$this->input->post_json("tableId");
+        if($decoded)
+        {
+			$players = $this->tableModel->listplayers($tableId,$roomId);
+			if($players)
+			{
+				$arr['json'] =$players;
+				$arr['response_code']=200;
+			}else
+			{
+				$arr['json'] ='';
+				$arr['response_code']=200;
+			}
+			
+		} else
+        {
+            log_message("error",'Decoded NOT available');
+            
+            $arr['response_code'] = 401;
+        }
+        $this->parser->parse("json", $arr);
 	}
 	
 	function createtable(){

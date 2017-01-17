@@ -14,7 +14,11 @@ class tableModel extends CI_Model {
     }
 	
     function listTable(){
-		$this->db->distinct('tableid');
+		$this->db->group_by('tableid');
+		$this->db->group_by('roomid');
+		$this->db->select('tableid');
+		$this->db->select('roomid');
+		$this->db->having('count(tableid) < 5');
 		$query = $this->db->get("mahjongtable");
 		if($query->num_rows() >0)
 		{
@@ -26,6 +30,7 @@ class tableModel extends CI_Model {
 	
     function listplayers($tableId,$roomId)
     {
+		$this->db->select('userid');
 		$this->db->from("mahjongtable");
 		$this->db->where("tableid",$tableId);
 		$this->db->where("roomid",$roomId);
